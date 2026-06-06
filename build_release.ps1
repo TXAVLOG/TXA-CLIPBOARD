@@ -5,7 +5,7 @@ $ErrorActionPreference = "Stop"
 $AppName = "TXA Backup Tool"
 $AppPublisher = "TXA"
 $AppContact = "https://fb.com/vlog.txa.2311"
-$AppId = "{A75B3CC0-3CAF-4D80-B8E8-0DD4B5E38D1A}"
+$AppId = "A75B3CC0-3CAF-4D80-B8E8-0DD4B5E38D1A"
 $ProjectDir = $PSScriptRoot
 $ProjectFile = Join-Path $ProjectDir "TXABackupTool.csproj"
 $AppVersion = "1.0.0.0"
@@ -97,13 +97,12 @@ $IssContent = @"
 #define AppVersion "$AppVersion"
 #define AppPublisher "$AppPublisher"
 #define AppContact "$AppContact"
-#define AppId "$AppId"
 #define AppExeName "TXABackupTool.exe"
 #define FileExt ".txaf"
 #define FileExtDesc "TXA Backup Language File"
 
 [Setup]
-AppId={#AppId}
+AppId={A75B3CC0-3CAF-4D80-B8E8-0DD4B5E38D1A}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppPublisher={#AppPublisher}

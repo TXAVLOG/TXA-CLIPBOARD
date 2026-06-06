@@ -3,13 +3,12 @@
 #define AppVersion "1.0.0.0"
 #define AppPublisher "TXA"
 #define AppContact "https://fb.com/vlog.txa.2311"
-#define AppId "{A75B3CC0-3CAF-4D80-B8E8-0DD4B5E38D1A}"
 #define AppExeName "TXABackupTool.exe"
 #define FileExt ".txaf"
 #define FileExtDesc "TXA Backup Language File"
 
 [Setup]
-AppId={#AppId}
+AppId={A75B3CC0-3CAF-4D80-B8E8-0DD4B5E38D1A}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppPublisher={#AppPublisher}
