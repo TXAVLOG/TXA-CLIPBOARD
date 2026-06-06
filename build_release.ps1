@@ -97,12 +97,13 @@ $IssContent = @"
 #define AppVersion "$AppVersion"
 #define AppPublisher "$AppPublisher"
 #define AppContact "$AppContact"
+#define AppId "$AppId"
 #define AppExeName "TXABackupTool.exe"
 #define FileExt ".txaf"
 #define FileExtDesc "TXA Backup Language File"
 
 [Setup]
-AppId={A75B3CC0-3CAF-4D80-B8E8-0DD4B5E38D1A}
+AppId={#AppId}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppPublisher={#AppPublisher}

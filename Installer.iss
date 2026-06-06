@@ -3,12 +3,13 @@
 #define AppVersion "1.0.0.0"
 #define AppPublisher "TXA"
 #define AppContact "https://fb.com/vlog.txa.2311"
+#define AppId "A75B3CC0-3CAF-4D80-B8E8-0DD4B5E38D1A"
 #define AppExeName "TXABackupTool.exe"
 #define FileExt ".txaf"
 #define FileExtDesc "TXA Backup Language File"
 
 [Setup]
-AppId={A75B3CC0-3CAF-4D80-B8E8-0DD4B5E38D1A}
+AppId={#AppId}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppPublisher={#AppPublisher}
@@ -40,7 +41,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 ; Cài đặt toàn bộ nội dung thư mục publish (bao gồm cả thư mục con)
-Source: "C:\Users\TXA3100\Desktop\BACKUP - TOOL\TXABackupTool\bin\Release\net10.0-windows10.0.19041.0\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\TXA3100\Desktop\BACKUP - TOOL\TXABackupTool\bin\Release\net10.0-windows10.0.19041.0\win-x64\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"
