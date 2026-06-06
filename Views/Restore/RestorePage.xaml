@@ -1,0 +1,102 @@
+<UserControl x:Class="TXABackupTool.Views.Restore.RestorePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:TXABackupTool.Views.Restore"
+      xmlns:txa="clr-namespace:TXABackupTool.Helpers"
+      mc:Ignorable="d" 
+      d:DesignHeight="700" d:DesignWidth="1000">
+
+    <Grid Margin="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="{Binding Title}" Style="{StaticResource HeadlineDisplay}" Margin="0,0,0,32"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="1.4*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Restore Options -->
+            <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                <Border Style="{StaticResource LiquidGlassCard}" Margin="0,0,0,24">
+                    <StackPanel>
+                        <TextBlock Text="{Binding RestoreCbText}" Style="{StaticResource SubHeadline}" FontWeight="Bold" Margin="0,0,0,8"/>
+                        <TextBlock Text="{Binding RestoreDesc}" Style="{StaticResource SubHeadline}" FontSize="12" Opacity="0.6"/>
+                        <CheckBox Content="{Binding IncludeText}" IsChecked="True" IsEnabled="False" Margin="0,16,0,0"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- Log Panel -->
+            <Border Grid.Column="1" Margin="16,0,0,0" Background="{StaticResource SurfaceContainerLowestBrush}" CornerRadius="24" Padding="24" BorderBrush="{StaticResource OutlineVariantBrush}" BorderThickness="0,1,0,0">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="{Binding LogsTitle}" Style="{StaticResource SubHeadline}" Margin="0,0,0,16" Opacity="0.6"/>
+                    <TextBox x:Name="LogBox" Text="{Binding LogText, Mode=OneWay}" IsReadOnly="True" Background="Transparent" Foreground="{StaticResource OnSurfaceVariantBrush}" BorderThickness="0" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" TextWrapping="Wrap" FontFamily="{StaticResource MonoFont}" FontSize="12"/>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <!-- Source Path -->
+        <Border Grid.Row="2" Background="{StaticResource SurfaceContainerLowBrush}" CornerRadius="20" Margin="0,32,0,0" Padding="20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" Margin="0,0,24,0">
+                    <TextBlock Text="📂" FontSize="18" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding SourceDirText}" Style="{StaticResource SubHeadline}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBox Grid.Column="1" Text="{Binding BackupFolderPath}" Background="{StaticResource SurfaceContainerLowestBrush}" Foreground="{StaticResource OnSurfaceBrush}" Padding="12" BorderThickness="0"/>
+                <Button Grid.Column="2" Content="{Binding BrowseText}" Style="{StaticResource SecondaryButton}" Margin="16,0,0,0" VerticalAlignment="Center" Command="{Binding BrowseBackupCommand}" txa:TXATooltip.Text="${txa_restore_browse_tip}"/>
+                <Button Grid.Column="3" Content="{Binding StartText}" Margin="16,0,0,0" VerticalAlignment="Center" Command="{Binding StartRestoreCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsPathValid}" Value="False">
+                                    <Setter Property="Opacity" Value="0.4"/>
+                                    <Setter Property="Background" Value="#31353C"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Password Input (Hiện ra khi IsZipEnabled = True) -->
+        <Border Grid.Row="3" Visibility="{Binding IsZipEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                Background="{StaticResource SurfaceContainerLowBrush}" CornerRadius="20" Margin="0,16,0,0" Padding="20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" Margin="0,0,24,0">
+                    <TextBlock Text="🔑" FontSize="18" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding ZipPasswordLabel}" Style="{StaticResource SubHeadline}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBox Grid.Column="1" Text="{Binding ZipPassword}" Background="{StaticResource SurfaceContainerLowestBrush}" Foreground="{StaticResource OnSurfaceBrush}" Padding="12" BorderThickness="0"/>
+            </Grid>
+        </Border>
+
+        <!-- Error Modal -->
+        <txa:TXAModal Grid.RowSpan="3" IsOpen="{Binding IsModalOpen}" Title="{Binding ModalTitle}">
+            <StackPanel Margin="0,0,0,10">
+                <TextBlock Text="⚠️" FontSize="32" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                <TextBlock Text="{Binding ModalMessage}" Style="{StaticResource SubHeadline}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" FontWeight="Bold"/>
+                <Button Content="{Binding BtnOk}" Style="{StaticResource PrimaryButton}" Margin="0,24,0,0" HorizontalAlignment="Center" Click="CloseModal_Click"/>
+            </StackPanel>
+        </txa:TXAModal>
+    </Grid>
+</UserControl>

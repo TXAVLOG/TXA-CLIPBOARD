@@ -1,0 +1,157 @@
+<Window x:Class="TXABackupTool.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TXABackupTool"
+        xmlns:vm="clr-namespace:TXABackupTool.ViewModels"
+        xmlns:views="clr-namespace:TXABackupTool.Views"
+        xmlns:vrestore="clr-namespace:TXABackupTool.Views.Restore"
+        xmlns:helpers="clr-namespace:TXABackupTool.Helpers"
+        mc:Ignorable="d"
+        Title="TXA BACKUP TOOL" Height="900" Width="1400"
+        Background="Transparent"
+        WindowStyle="None" AllowsTransparency="True" WindowStartupLocation="CenterScreen"
+        MouseMove="Window_MouseMove"
+        MouseEnter="Window_MouseEnter"
+        MouseLeave="Window_MouseLeave"
+        UseLayoutRounding="True" SnapsToDevicePixels="True"
+        Topmost="{Binding IsTopmost}"
+        ResizeMode="NoResize">
+    
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="64" GlassFrameThickness="0" CornerRadius="0"/>
+    </WindowChrome.WindowChrome>
+
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:StorageViewModel}">
+            <views:StoragePage/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+            <views:SettingsPage/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:BackupViewModel}">
+            <views:BackupPage/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:RestoreViewModel}">
+            <vrestore:RestorePage/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:LogViewModel}">
+            <views:LogPage/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ComingSoonViewModel}">
+            <views:ComingSoonPage/>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Border Background="{StaticResource SurfaceBrush}" CornerRadius="28" ClipToBounds="True" BorderBrush="{StaticResource GlassBorderBrush}" BorderThickness="1">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="280"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Liquid Glass Mouse Glow (Behind Content) -->
+            <Canvas x:Name="GlowCanvas" IsHitTestVisible="False" Grid.ColumnSpan="2" Panel.ZIndex="-1">
+                <Ellipse x:Name="GlowOrb" Width="400" Height="400" Opacity="0" IsHitTestVisible="False">
+                    <Ellipse.Fill>
+                        <RadialGradientBrush>
+                            <GradientStop Color="#1867DF70" Offset="0"/>
+                            <GradientStop Color="#0867DF70" Offset="0.5"/>
+                            <GradientStop Color="#00000000" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Ellipse.Fill>
+                </Ellipse>
+            </Canvas>
+
+
+            <!-- Sidebar -->
+            <Border Grid.Column="0" Background="{StaticResource SurfaceContainerLowBrush}" BorderBrush="{StaticResource GlassBorderBrush}" BorderThickness="0,0,1,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Branding -->
+                    <TextBlock Text="🛡️ TBACKUP" 
+                               Style="{StaticResource HeadlineDisplay}" 
+                               Foreground="{StaticResource PrimaryBrush}" 
+                               FontSize="20" 
+                               Margin="32,48,32,32" 
+                               MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"
+                               helpers:TXATooltip.Text="${txa_lang_vi_name}"/>
+
+                    <!-- Navigation -->
+                    <StackPanel Grid.Row="1">
+                        <local:NavButton Text="{Binding NavBackup}" Icon="📦" Command="{Binding NavBackupCommand}" IsActive="{Binding IsBackupActive}"/>
+                        <local:NavButton Text="{Binding NavRestore}" Icon="🔄" Command="{Binding NavRestoreCommand}" IsActive="{Binding IsRestoreActive}"/>
+                        <local:NavButton Text="{Binding NavLogs}" Icon="📜" Command="{Binding NavLogsCommand}" IsActive="{Binding IsLogsActive}"/>
+                        <local:NavButton Text="{Binding NavStorage}" Icon="💾" Command="{Binding NavStorageCommand}" IsActive="{Binding IsStorageActive}"/>
+                        <local:NavButton Text="{Binding NavSettings}" Icon="⚙️" Command="{Binding NavSettingsCommand}" IsActive="{Binding IsSettingsActive}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="3" Margin="24">
+                        <TextBlock Text="{Binding LabelLang}" Style="{StaticResource SubHeadline}" FontSize="10" Margin="0,0,0,8" Opacity="0.5"/>
+                        <helpers:TXADropdown ItemsSource="{Binding AvailableLanguages}" SelectedItem="{Binding SelectedLanguage}" HorizontalAlignment="Stretch" Margin="0,0,0,12">
+                            <helpers:TXADropdown.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}"/>
+                                </DataTemplate>
+                            </helpers:TXADropdown.ItemTemplate>
+                        </helpers:TXADropdown>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Content Area -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="64"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="40"/>
+                </Grid.RowDefinitions>
+
+                <!-- Custom Title Bar -->
+                <Grid Grid.Row="0" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown" Background="Transparent">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,16,0">
+                        <Button Content="─" Background="Transparent" Foreground="{StaticResource OnSurfaceVariantBrush}" BorderThickness="0" Width="40" Height="40" FontSize="16" Click="MinButton_Click" WindowChrome.IsHitTestVisibleInChrome="True"/>
+                        <Button Content="✕" Background="Transparent" Foreground="{StaticResource OnSurfaceVariantBrush}" BorderThickness="0" Width="40" Height="40" FontSize="16" Click="CloseButton_Click" WindowChrome.IsHitTestVisibleInChrome="True"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Main Viewport -->
+                <ContentControl Grid.Row="1" Content="{Binding CurrentView}"/>
+
+                <!-- Status Bar -->
+                <Border Grid.Row="2" Background="{StaticResource SurfaceContainerLowBrush}" BorderBrush="{StaticResource OutlineVariantBrush}" BorderThickness="0,1,0,0">
+                    <Grid Margin="24,0">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding StatusFiles}" Foreground="{StaticResource PrimaryBrush}" FontSize="11" Margin="0,0,24,0"/>
+                            <TextBlock Text="{Binding StatusSkipped}" Foreground="{StaticResource ErrorBrush}" FontSize="11" Margin="0,0,24,0"/>
+                            <TextBlock Text="{Binding StatusSize}" Style="{StaticResource SubHeadline}" FontSize="11"/>
+                        </StackPanel>
+                        <TextBlock Text="© TXA VLOG" Style="{StaticResource SubHeadline}" FontSize="10" HorizontalAlignment="Right" VerticalAlignment="Center" Opacity="0.4"/>
+                    </Grid>
+                </Border>
+            </Grid>
+            <!-- Global Notification Modal (TXA PREMIUM NOTIFIER) -->
+            <helpers:TXAModal IsOpen="{Binding IsModalOpen}" Title="{Binding ModalTitle}" Grid.ColumnSpan="2">
+                <StackPanel Width="450" Margin="0,10">
+                    <TextBlock Text="{Binding ModalContent}" 
+                               Foreground="{StaticResource OnSurfaceBrush}"
+                               FontSize="16" TextAlignment="Center" 
+                               LineHeight="26" Margin="0,20,0,40" TextWrapping="Wrap"/>
+
+                    <Button Content="{Binding ModalOkText}" 
+                            Style="{StaticResource PrimaryButton}" 
+                            Width="200"
+                            HorizontalAlignment="Center"
+                            Command="{Binding CloseModalCommand}"/>
+                </StackPanel>
+            </helpers:TXAModal>
+        </Grid>
+    </Border>
+</Window>

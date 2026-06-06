@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <ApplicationIcon>Assets\logo.ico</ApplicationIcon>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    
+    <!-- TXA PREMIUM ASSEMBLY METADATA -->
+    <Title>TXA Backup Tool</Title>
+    <Product>TXA Backup Tool</Product>
+    <Description>Advanced System Backup &amp; Privacy Protection Suite</Description>
+    <Company>TXA VLOG</Company>
+    <Authors>TXA</Authors>
+    <Copyright>© 2026 TXA VLOG — BẢN QUYỀN ĐÃ ĐƯỢC BẢO HỘ VÀ ĐĂNG KÍ</Copyright>
+    <PackageProjectUrl>https://fb.com/vlog.txa.2311</PackageProjectUrl>
+    <Version>1.0.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="app.manifest">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="lang\*.txaf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNetZip.Original" Version="2025.2.15" />
+    <PackageReference Include="System.Management" Version="10.0.0-preview.1.25080.5" />
+  </ItemGroup>
+
+</Project>

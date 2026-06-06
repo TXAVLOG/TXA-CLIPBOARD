@@ -1,0 +1,294 @@
+<UserControl x:Class="TXABackupTool.Views.StoragePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:txa="clr-namespace:TXABackupTool.Helpers"
+      xmlns:conv="clr-namespace:TXABackupTool.Converters"
+      mc:Ignorable="d" 
+      d:DesignHeight="700" d:DesignWidth="1000">
+
+    <Grid Margin="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Grid Grid.Row="0" Margin="0,0,0,28">
+            <StackPanel>
+                <TextBlock Text="{Binding Title}" Style="{StaticResource HeadlineDisplay}"/>
+                <TextBlock Text="{Binding SubTitle}" Style="{StaticResource SubHeadline}" Margin="0,6,0,0" Opacity="0.55"/>
+            </StackPanel>
+        </Grid>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+
+                <!-- Row 1: Drive Stats + Quick Actions -->
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.8*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Drive Stats Card -->
+                    <Border Style="{StaticResource LiquidGlassCard}" Margin="0,0,12,0" Padding="28">
+                        <StackPanel>
+                            <!-- Header row -->
+                            <DockPanel Margin="0,0,0,16">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="&#x1F4BD;" FontSize="18" Margin="0,0,10,0"/>
+                                    <TextBlock Text="{Binding DriveStatsTitle}" Style="{StaticResource HeadlineDisplay}" FontSize="16"/>
+                                </StackPanel>
+
+                                <!-- Live status indicator -->
+                                <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,10,0,0">
+                                    <Ellipse Width="7" Height="7" Fill="#FF4242" Margin="0,0,7,0" VerticalAlignment="Center">
+                                        <Ellipse.Style>
+                                            <Style TargetType="Ellipse">
+                                                <Style.Triggers>
+                                                    <EventTrigger RoutedEvent="Loaded">
+                                                        <BeginStoryboard>
+                                                            <Storyboard RepeatBehavior="Forever">
+                                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.15" Duration="0:0:1.2" AutoReverse="True"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Ellipse.Style>
+                                    </Ellipse>
+                                    <TextBlock Text="{Binding LiveStatus}" FontSize="9" FontWeight="Black" Foreground="#FF4242" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                    <TextBlock Text="{Binding LastUpdated}" FontSize="9" Opacity="0.35" VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <Button Content="{Binding BtnRefresh}" Style="{StaticResource SecondaryButton}"
+                                        HorizontalAlignment="Right" VerticalAlignment="Top" Padding="14,8" FontSize="12"
+                                        Command="{Binding RefreshDrivesCommand}"
+                                        txa:TXATooltip.Text="${txa_storage_refresh_tip}"/>
+                            </DockPanel>
+
+                            <!-- Drives List -->
+                            <ItemsControl ItemsSource="{Binding Drives}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="{StaticResource SurfaceContainerLowestBrush}" CornerRadius="16" Padding="20" Margin="0,0,0,10">
+                                            <StackPanel>
+                                                <Grid Margin="0,0,0,12">
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding Label}" Style="{StaticResource SubHeadline}" FontSize="11" Opacity="0.65"/>
+                                                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                            <TextBlock Text="{Binding Used}" FontWeight="ExtraBold" FontSize="22" Foreground="{StaticResource OnSurfaceBrush}"/>
+                                                            <TextBlock Text="{Binding Total}" Style="{StaticResource SubHeadline}" FontSize="13" VerticalAlignment="Bottom" Margin="8,0,0,3"/>
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                    <Border HorizontalAlignment="Right" VerticalAlignment="Top"
+                                                            Background="{Binding ColorBrush}" CornerRadius="6" Padding="8,3">
+                                                        <TextBlock Text="{Binding Pct}" Foreground="#10141A" FontWeight="Bold" FontSize="11"/>
+                                                    </Border>
+                                                </Grid>
+                                                <ProgressBar Value="{Binding PctValue}" Maximum="100" Height="9"
+                                                             Foreground="{Binding ColorBrush}"
+                                                             Background="{StaticResource SurfaceContainerHighBrush}"
+                                                             BorderThickness="0"
+                                                             txa:TXATooltip.Text="{Binding UsageTooltip}"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Quick Actions Card -->
+                    <Border Grid.Column="1" Style="{StaticResource LiquidGlassCard}" Margin="12,0,0,0" Padding="24" VerticalAlignment="Top">
+                        <StackPanel>
+                            <TextBlock Text="{Binding QuickActionsTitle}" Style="{StaticResource SubHeadline}"
+                                       FontSize="10" Opacity="0.5" Margin="0,0,0,14"
+                                       FontWeight="Black"/>
+
+                            <!-- Change folder -->
+                            <Border Background="{StaticResource SurfaceContainerLowestBrush}" CornerRadius="14"
+                                    Padding="16" Margin="0,0,0,8" Cursor="Hand"
+                                    txa:TXATooltip.Text="${txa_storage_change_folder_tip}">
+                                <Border.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" Command="{Binding ChangeFolderCommand}"/>
+                                </Border.InputBindings>
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource SurfaceContainerHighBrush}"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock Text="&#x1F4C2;" FontSize="17" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding BtnChangeFolder}" FontWeight="Bold" FontSize="13" Foreground="{StaticResource OnSurfaceBrush}"/>
+                                            <TextBlock Text="{Binding CurrentDestPath}" Style="{StaticResource SubHeadline}"
+                                                       FontSize="10" Opacity="0.5" TextTrimming="CharacterEllipsis"
+                                                       MaxWidth="140" Margin="0,3,0,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <TextBlock Text="&#x203A;" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                               FontSize="20" Foreground="{StaticResource OnSurfaceVariantBrush}"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Open folder -->
+                            <Border Background="{StaticResource SurfaceContainerLowestBrush}" CornerRadius="14"
+                                    Padding="16" Cursor="Hand"
+                                    txa:TXATooltip.Text="${txa_storage_open_dest_tip}">
+                                <Border.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" Command="{Binding OpenDestCommand}"/>
+                                </Border.InputBindings>
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource SurfaceContainerHighBrush}"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock Text="&#x1F5C2;&#xFE0F;" FontSize="17" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding BtnOpenFolder}" FontWeight="Bold" FontSize="13" Foreground="{StaticResource OnSurfaceBrush}"/>
+                                    </StackPanel>
+                                    <TextBlock Text="&#x203A;" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                               FontSize="20" Foreground="{StaticResource OnSurfaceVariantBrush}"/>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Row 2: Backup Locations -->
+                <Border Style="{StaticResource LiquidGlassCard}" Margin="0,0,0,16" Padding="28">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,18">
+                            <TextBlock Text="&#x1F4CD;" FontSize="18" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding BackupLocationsTitle}" Style="{StaticResource HeadlineDisplay}" FontSize="16" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- Local Path row -->
+                        <Border Background="{StaticResource SurfaceContainerLowestBrush}" CornerRadius="14" Padding="16" Margin="0,0,0,10">
+                            <Grid>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="&#x1F4C1;" FontSize="16" Margin="0,0,14,0" VerticalAlignment="Center"/>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding LocalPathLabel}" FontWeight="Bold" FontSize="13" Foreground="{StaticResource OnSurfaceBrush}"/>
+                                        <TextBlock Text="{Binding LocalPathValue}" FontFamily="{StaticResource MonoFont}"
+                                                   FontSize="11" Foreground="{StaticResource PrimaryBrush}" Margin="0,4,0,0"
+                                                   txa:TXATooltip.Text="{Binding LocalPathValue}"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <Button Content="&#x270F;&#xFE0F;" Style="{StaticResource SecondaryButton}"
+                                        HorizontalAlignment="Right" Padding="10,6" FontSize="14" VerticalAlignment="Center"
+                                        Command="{Binding ChangeFolderCommand}"
+                                        txa:TXATooltip.Text="${txa_storage_edit_path_tip}"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Cloud Sync row -->
+                        <Border Background="{StaticResource SurfaceContainerLowestBrush}" CornerRadius="14" Padding="16">
+                            <Grid>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="&#x2601;&#xFE0F;" FontSize="16" Margin="0,0,14,0" VerticalAlignment="Center"/>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding CloudSyncLabel}" FontWeight="Bold" FontSize="13" Foreground="{StaticResource OnSurfaceBrush}"/>
+                                        <TextBlock Text="{Binding CloudSyncStatus}" Style="{StaticResource SubHeadline}" FontSize="11" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <Border Width="8" Height="8" CornerRadius="4"
+                                            Background="{StaticResource OnSurfaceVariantBrush}"
+                                            Opacity="0.3" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                    <TextBlock Text="{Binding CloudSyncConnected}" Foreground="{StaticResource OnSurfaceVariantBrush}"
+                                               Opacity="0.5" FontWeight="Bold" FontSize="11" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- Row 3: Storage Settings -->
+                <Border Style="{StaticResource LiquidGlassCard}" Padding="28">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                            <TextBlock Text="&#x2699;&#xFE0F;" FontSize="18" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding StorageSettingsTitle}" Style="{StaticResource HeadlineDisplay}" FontSize="16" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Auto Clean -->
+                            <Border Grid.Column="0" Background="{StaticResource SurfaceContainerLowestBrush}" CornerRadius="16" Padding="20" Margin="0,0,8,0">
+                                <Grid>
+                                    <StackPanel Margin="0,0,56,0">
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                            <TextBlock Text="&#x1F5D1;&#xFE0F;" FontSize="18" Margin="0,0,10,0"/>
+                                            <TextBlock Text="{Binding AutoCleanTitle}" FontWeight="Bold" FontSize="13"
+                                                       Foreground="{StaticResource OnSurfaceBrush}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding AutoCleanDesc}" Style="{StaticResource SubHeadline}" FontSize="12" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                    <CheckBox IsChecked="{Binding AutoCleanEnabled}"
+                                              HorizontalAlignment="Right" VerticalAlignment="Top"
+                                              Style="{StaticResource TXAToggle}"
+                                              txa:TXATooltip.Text="${txa_storage_autoclean_tip}"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Compress + Password -->
+                            <Border Grid.Column="1" Background="{StaticResource SurfaceContainerLowestBrush}" CornerRadius="16" Padding="20" Margin="8,0,0,0">
+                                <StackPanel>
+                                    <Grid>
+                                        <StackPanel Margin="0,0,56,0">
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                                <TextBlock Text="&#x1F5DC;&#xFE0F;" FontSize="18" Margin="0,0,10,0"/>
+                                                <TextBlock Text="{Binding CompressTitle}" FontWeight="Bold" FontSize="13"
+                                                           Foreground="{StaticResource OnSurfaceBrush}" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding CompressDesc}" Style="{StaticResource SubHeadline}" FontSize="12" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                        <CheckBox IsChecked="{Binding CompressEnabled}"
+                                                  HorizontalAlignment="Right" VerticalAlignment="Top"
+                                                  Style="{StaticResource TXAToggle}"
+                                                  txa:TXATooltip.Text="${txa_storage_compress_tip}"/>
+                                    </Grid>
+
+                                    <!-- Password field - shows when compress enabled -->
+                                    <StackPanel Margin="0,14,0,0"
+                                                Visibility="{Binding CompressEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <TextBlock Text="{Binding PasswordInputLabel}" FontSize="10" FontWeight="Bold"
+                                                   Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,6"/>
+                                        <Border Background="{StaticResource SurfaceContainerLowBrush}" CornerRadius="10" Padding="10,6"
+                                                BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1">
+                                            <TextBox Text="{Binding ZipPassword, UpdateSourceTrigger=PropertyChanged}"
+                                                     Background="Transparent" BorderThickness="0"
+                                                     Foreground="{StaticResource OnSurfaceBrush}"
+                                                     FontSize="12" VerticalContentAlignment="Center"
+                                                     SelectionBrush="{StaticResource PrimaryBrush}"
+                                                     txa:TXATooltip.Text="${txa_storage_compress_tip}"/>
+                                        </Border>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
