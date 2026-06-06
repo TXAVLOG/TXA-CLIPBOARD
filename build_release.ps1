@@ -3,13 +3,38 @@
 
 $ErrorActionPreference = "Stop"
 $AppName = "TXA Backup Tool"
-$AppVersion = "1.0.0"
 $AppPublisher = "TXA"
 $AppContact = "https://fb.com/vlog.txa.2311"
+$AppId = "{A75B3CC0-3CAF-4D80-B8E8-0DD4B5E38D1A}"
 $ProjectDir = $PSScriptRoot
+$ProjectFile = Join-Path $ProjectDir "TXABackupTool.csproj"
+$AppVersion = "1.0.0.0"
+
+if (Test-Path $ProjectFile) {
+    try {
+        [xml]$csproj = Get-Content $ProjectFile
+        $version = $csproj.Project.PropertyGroup | ForEach-Object { $_.Version } | Where-Object { $_ }
+        if (-not $version) {
+            $version = $csproj.Project.PropertyGroup | ForEach-Object { $_.AssemblyVersion } | Where-Object { $_ }
+        }
+        if (-not $version) {
+            $version = $csproj.Project.PropertyGroup | ForEach-Object { $_.FileVersion } | Where-Object { $_ }
+        }
+        if ($version) {
+            $AppVersion = $version.Trim()
+        }
+    } catch {
+        Write-Host "[WARN] Could not read version from csproj. Using default $AppVersion" -ForegroundColor Yellow
+    }
+}
+
 $PublishPath = Join-Path $ProjectDir "bin\Release\net10.0-windows10.0.19041.0\win-x64\publish"
 $IssFile = Join-Path $ProjectDir "Installer.iss"
 $SetupOut = "C:\install\Setup"
+
+if (-not (Test-Path $SetupOut)) {
+    New-Item -ItemType Directory -Path $SetupOut -Force | Out-Null
+}
 
 Clear-Host
 Write-Host "========================================================" -ForegroundColor Cyan
@@ -72,7 +97,7 @@ $IssContent = @"
 #define AppVersion "$AppVersion"
 #define AppPublisher "$AppPublisher"
 #define AppContact "$AppContact"
-#define AppId "{{TXA-BACKUP-TOOL-2026-UNIQUE-ID}}"
+#define AppId "$AppId"
 #define AppExeName "TXABackupTool.exe"
 #define FileExt ".txaf"
 #define FileExtDesc "TXA Backup Language File"
@@ -86,7 +111,7 @@ AppCopyright=© 2026 TXA VLOG — BẢN QUYỀN ĐÃ ĐƯỢC BẢO HỘ
 DefaultDirName={localappdata}\Programs\TXABackupTool
 DefaultGroupName=TXA Backup Tool
 OutputDir=$SetupOut
-OutputBaseFilename=TXABackupTool_Setup
+OutputBaseFilename=TXABackupTool_Setup_v{#AppVersion}
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
