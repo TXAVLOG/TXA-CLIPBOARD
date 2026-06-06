@@ -158,7 +158,7 @@ var
   sUninstPath: String;
   sUninstString: String;
 begin
-  sUninstPath := ExpandConstant('Software\Microsoft\Windows\CurrentVersion\Uninstall\{#AppId}_is1');
+  sUninstPath := ExpandConstant('Software\Microsoft\Windows\CurrentVersion\Uninstall\A75B3CC0-3CAF-4D80-B8E8-0DD4B5E38D1A_is1');
   sUninstString := '';
   if not RegQueryStringValue(HKLM, sUninstPath, 'UninstallString', sUninstString) then
     RegQueryStringValue(HKCU, sUninstPath, 'UninstallString', sUninstString);
